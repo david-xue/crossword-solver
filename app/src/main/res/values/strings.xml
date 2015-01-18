@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">SmartCrosswordSolver</string>
+    <string name="app_full_name">Smart Crossword Solver</string>
+    <string name="action_settings">Settings</string>
+    <string name="search_pattern_hint">What does the pattern look like? e.g. T?r??g</string>
+    <string name="search">Search</string>
+    <string name="advanced_search">Advanced Search</string>
+    <string name="hint_hint">What is the hint? e.g. computer scientist</string>
+    <string name="length">What is the length? e.g. 6</string>
+    <string name="title_activity_results">ResultsActivity</string>
+    <string name="hello_world">Hello world!</string>
+
+</resources>
