@@ -17,32 +17,32 @@
         android:layout_marginBottom="30dp"
         />
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/pattern_textView"
+        android:id="@+id/pattern_edittext"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:hint="@string/search_pattern_hint"
         android:clickable="false" />
 
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/hint_textView"
+        android:id="@+id/hint_edittext"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:hint="@string/hint_hint"
         />
 
-    <TextView
+    <EditText
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:layout_marginBottom="30dp"
         android:hint="@string/length"
-        android:id="@+id/length_textView"
+        android:id="@+id/length_edittext"
 
         />
 

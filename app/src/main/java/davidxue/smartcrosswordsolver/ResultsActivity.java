@@ -3,10 +3,11 @@ package davidxue.smartcrosswordsolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -21,16 +22,23 @@ import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import roboguice.activity.RoboActionBarActivity;
 
-public class ResultsActivity extends ActionBarActivity {
+
+public class ResultsActivity extends RoboActionBarActivity {
 
     private String mHint, mPattern, mLength;
     private ArrayList<String> mResultList;
+    private ArrayAdapter<String> mResultArrayAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_results);
+        mResultList = new ArrayList<>();
+        mResultArrayAdapter = new ArrayAdapter<>(this, R.layout.result_list_item, R.id.result_list_item_textview, mResultList);
+        ListView resultList = (ListView) findViewById(R.id.result_list);
+        resultList.setAdapter(mResultArrayAdapter);
         Intent intent = getIntent();
         mHint = intent.getStringExtra("hint");
         mPattern = intent.getStringExtra("pattern");
@@ -38,7 +46,6 @@ public class ResultsActivity extends ActionBarActivity {
         FetchResultsTask task = new FetchResultsTask();
         task.execute();
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -65,20 +72,28 @@ public class ResultsActivity extends ActionBarActivity {
     private class FetchResultsTask extends AsyncTask<String, Void, String> {
         @Override
         protected String doInBackground(String... uri) {
-            Uri getUri = new Uri.Builder()
+            Uri.Builder uriBuilder = new Uri.Builder()
                     .scheme("http")
                     .authority("dictionary.reference.com")
                     .path("crossword/index.html")
-                    .appendQueryParameter("query", mHint)
                     .appendQueryParameter("type", "answer")
-                    .appendQueryParameter("n", mLength)
-                    .appendQueryParameter("pattern", mPattern)
-                    .build();
+                    .appendQueryParameter("n", "10");
+            if (!mHint.isEmpty()) {
+                uriBuilder = uriBuilder.appendQueryParameter("query", mHint);
+            }
+            if (!mLength.isEmpty()) {
+                uriBuilder = uriBuilder.appendQueryParameter("l", mLength);
+            }
+            if (!mPattern.isEmpty()) {
+                uriBuilder = uriBuilder.appendQueryParameter("pattern", mPattern);
+
+            }
+            Uri getUri = uriBuilder.build();
             HttpClient httpclient = new DefaultHttpClient();
             HttpResponse response;
             String responseString;
             try {
-                response = httpclient.execute(new HttpGet(String.valueOf(getUri))));
+                response = httpclient.execute(new HttpGet(String.valueOf(getUri)));
                 StatusLine statusLine = response.getStatusLine();
                 if (statusLine.getStatusCode() == HttpStatus.SC_OK){
                     ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -91,20 +106,25 @@ public class ResultsActivity extends ActionBarActivity {
                 }
             } catch (Exception e) {
                 //TODO: what if network call fails
+                responseString = "";
             }
             return responseString;
         }
 
         @Override
         protected void onPostExecute(String result) {
-            Pattern p = Pattern.compile("Look up \"([a-zA-Z]+)\"");
-            Matcher m = p.matcher(result);
-            while (m.find()) {
-                String res = m.group(1);
-                mResultList.add(res);
+            if (result.isEmpty()) {
+                finish();
+            } else {
+                Pattern p = Pattern.compile("Look up \"([a-zA-Z]+)\"");
+                Matcher m = p.matcher(result);
+                while (m.find()) {
+                    String res = m.group(1);
+                    mResultList.add(res);
+                }
+                mResultArrayAdapter.notifyDataSetChanged();
             }
         }
-
     }
 
 }
